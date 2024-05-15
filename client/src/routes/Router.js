@@ -17,7 +17,7 @@ const Login = lazy(() => import("../views/Login.js"));
 const Admin = lazy(() => import("../views/dashboards/adminDash.js"));
 const Registrar = lazy(() => import("../views/dashboards/registrarDash.js"));
 const Teacher = lazy(() => import("../views/dashboards/teacherDash.js"));
-
+git
 // Components
 const Students = lazy(() => import("../components/tables/students list/students.js")); // Student List (active, inactive, alumni)
 const AccountsAdmin = lazy(() => import("../components/tables/user accounts/admin.js")); // Admin User Accounts - Teachers and Registrars
