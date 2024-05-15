@@ -1,0 +1,5 @@
+.bg-image {
+    background-image: url('../assets/images/bg/schoolimg.jpeg');
+    background-size: cover;
+    height: 100vh; /* Set the height to cover the entire viewport */
+  }
