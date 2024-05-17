@@ -29,7 +29,7 @@ const Header = () => {
   return (
     <Navbar color="primary" dark expand="md">
       <div className="d-flex align-items-center">
-        <NavbarBrand href="/registrar/dashboard" className="d-lg-none">
+        <NavbarBrand href="/user/registrar/dashboard" className="d-lg-none">
           <LogoWhite />
         </NavbarBrand>
         <Button
@@ -58,12 +58,12 @@ const Header = () => {
       <Collapse navbar isOpen={isOpen}>
         <Nav className="me-auto" navbar>
           <NavItem>
-            <Link to="/registrar/dashboard" className="nav-link">
+            <Link to="/user/registrar/dashboard" className="nav-link">
               Dashboard
             </Link>
           </NavItem>
           <NavItem>
-            <Link to="/registrar/about" className="nav-link">
+            <Link to="/user/registrar/about" className="nav-link">
               About
             </Link>
           </NavItem>

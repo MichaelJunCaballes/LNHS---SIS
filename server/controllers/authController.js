@@ -26,11 +26,12 @@
       const { username, password } = req.body;
       const user = await User.findOne({ username });
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: 'User not found' }); // Change to 404 Not Found
       }
+      // Inside the bcrypt password validation block
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
-        return res.status(401).json({ message: 'Invalid credentials' });
+        return res.status(401).json({ message: 'Invalid credentials' }); // Change to 401 Unauthorized
       }
       const token = generateToken(user);
   
@@ -41,11 +42,12 @@
         maxAge: 3600000 // 1 hour
       });
   
-      res.json({ userId: user._id });
+      res.json({ userId: user._id, role: user.role }); // Return the user's role
     } catch (error) {
       res.status(400).json({ message: error.message });
-    }
+    } 
   };
+  
 
 
   exports.getAllUsers = async (req, res) => {

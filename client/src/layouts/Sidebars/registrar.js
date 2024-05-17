@@ -5,27 +5,27 @@ import { Link, useLocation } from "react-router-dom";
 const navigation = [
   {
     title: "Dashboard",
-    href: "/registrar/dashboard",
+    href: "/user/registrar/dashboard",
     icon: "bi bi-speedometer2",
   },
   {
     title: "Students",
-    href: "/registrar/students",
+    href: "/user/registrar/students",
     icon: "bi bi-people",
   },
   {
     title: "Transcript of Records",
-    href: "/registrar/TOR",
+    href: "/user/registrar/TOR",
     icon: "bi bi-hdd-stack",
   },
   {
     title: "User Profile",
-    href: "/registrar/profile",
+    href: "/user/registrar/profile",
     icon: "bi bi-patch-check",
   },
   {
     title: "User Accounts",
-    href: "/registrar/accounts",
+    href: "/user/registrar/accounts",
     icon: "bi bi-people",
   },
 ];

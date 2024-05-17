@@ -12,19 +12,16 @@ import {
   Label,
   Input,
 } from 'reactstrap';
-import { useAuth } from '../middlewares/authContext';
 import './Login.css';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,11 +31,32 @@ function Login() {
     });
 
     if (response.ok) {
-      setIsAuthenticated(true);
-      navigate('/dashboard'); // Redirect to dashboard or another protected route
-    } else {
       const data = await response.json();
-      alert(data.message); // Handle error accordingly
+      const { role } = data;
+      localStorage.setItem('role', role); // Store user's role in localStorage
+      switch (role) {
+        case 'admin':
+          navigate('/user/admin/dashboard');
+          break;
+        case 'registrar':
+          navigate('/user/registrar/dashboard');
+          break;
+        case 'teacher':
+          navigate('/user/teacher/dashboard');
+          break;
+        default:
+          navigate('/'); // Redirect to login page if role is not recognized
+      }
+      // Display success message
+      alert('Login successful!');
+    } else {
+      try {
+        const data = await response.json();
+        alert(data.message); // Handle error accordingly
+      } catch (error) {
+        console.error('Error parsing JSON from response:', error);
+        alert('An error occurred during login. Please try again.');
+      }
     }
   };
 
@@ -54,7 +72,7 @@ function Login() {
             <small className="p-3 text-center">LOGIN</small>
             <CardBody>
               <Form onSubmit={handleSubmit}>
-                <Row form>
+                <Row>
                   <Col md={6}>
                     <FormGroup>
                       <Label for="username">Username</Label>
