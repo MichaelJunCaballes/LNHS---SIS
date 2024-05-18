@@ -1,69 +1,36 @@
 import React, { useState } from 'react';
-import { Form, FormGroup, Label, Input, Button } from "reactstrap";
+import { Form, FormGroup, Label, Input } from "reactstrap";
 import axios from 'axios';
 
-function UpdateStudents({ studentData, handleClose }) {
+function UpdateStudents({ studentData }) {
 
-  // Function to calculate age based on date of birth
-  const calculateAge = (dateOfBirth) => {
-    const dob = new Date(dateOfBirth);
-    const ageDiffMs = Date.now() - dob.getTime();
-    const ageDate = new Date(ageDiffMs); // miliseconds from epoch
-    return Math.abs(ageDate.getUTCFullYear() - 1970);
-  };
-
-  
-  const [formData, setFormData] = useState({
-    firstName: studentData.firstName,
-    lastName: studentData.lastName,
-    middleName: studentData.middleName,
-    age: calculateAge(studentData.dateOfBirth), // Initial age based on date of birth
-    address: studentData.address,
-    sex: studentData.sex,
-    email: studentData.email,
-    dateOfBirth: studentData.dateOfBirth,
-    gradeLevel: studentData.gradeLevel,
-    LRN: studentData.LRN,
-    academicStatus: studentData.academicStatus,
-    schoolYear: studentData.schoolYear,
-    Form10: studentData.Form10,
-    Form9: studentData.Form9,
-    section: studentData.section,
-  });
+    const [formData, setFormData] = useState(studentData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'dateOfBirth') {
-      setFormData(prevState => ({
-        ...prevState,
-        age: calculateAge(value), // Update age based on new date of birth
-        [name]: value
-      }));
-    } else {
-      setFormData(prevState => ({
-        ...prevState,
-        [name]: value
-      }));
-    }
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/student/students/${studentData._id}`, formData);
-      console.log('Student updated successfully');
-      alert('Student updated successfully')
-      handleClose(); // close the modal after successful update
-      // Optionally, you can add logic to handle success (e.g., show a success message)
+      const response = await axios.put(`http://localhost:5000/api/student/students/${formData._id}`, formData);
+      if (response.status === 200) {
+        alert('Student updated successfully!');
+      } else {
+        console.error('Update Error:', response.data.message);
+      }
     } catch (error) {
-      console.error('Error updating student:', error);
-      // Optionally, you can add logic to handle errors (e.g., show an error message)
+      console.error('Update Error:', error.message);
     }
   };
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormGroup>
+      <FormGroup controlId="formFirstName">
         <Label for="firstName">First Name</Label>
         <Input
           type="text"
@@ -238,7 +205,6 @@ function UpdateStudents({ studentData, handleClose }) {
           onChange={handleChange}
         />
       </FormGroup>
-      <Button type='submit' color="primary" >Submit</Button>
     </Form>
   );
 }

@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const studentController = require('../controllers/studentController');
-const { protectRoute } = require('../middlewares/authMiddleware');
 
-router.use(protectRoute);
+// Apply protection middleware if necessary
+router.get('/check-auth', studentController.checkAuth); // New route for checking authentication
+
 // Student Routes
 router.post('/students', studentController.addStudent);
 router.put('/students/:id', studentController.updateStudent);

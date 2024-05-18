@@ -21,22 +21,39 @@ function AdminUserAccounts ({ handleClose }) {
     const [updateModalData, setUpdateModalData] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const adminResponse = await axios.get('http://localhost:5000/api/auth/admins');
-            const registrarResponse = await axios.get('http://localhost:5000/api/auth/registrars');
-            const teacherResponse = await axios.get('http://localhost:5000/api/auth/teachers');
+        const checkAuthAndFetchData = async () => {
+            try {
+                const authResponse = await axios.get('http://localhost:5000/api/auth/check-auth', { withCredentials: true });
+                if (authResponse.status === 200) {
+                    const userToken = authResponse.data.token;
+                    if (!userToken) {
+                        throw new Error('User Token is not defined');
+                    }
+                    const config = {
+                        headers: { Authorization: `Bearer ${userToken}` },
+                        withCredentials: true,
+                    };
+                    const adminsResponse = await axios.get('http://localhost:5000/api/auth/admins', config);
+                    const registrarsResponse = await axios.get('http://localhost:5000/api/auth/registrars', config);
+                    const teachersResponse = await axios.get('http://localhost:5000/api/auth/teachers', config);
     
-            setAdmin(adminResponse.data);
-            setRegistrar(registrarResponse.data);
-            setTeacher(teacherResponse.data);
-          } catch (error) {
-            console.error('Error fetching users:', error);
-          }
+                    setAdmin(adminsResponse.data);
+                    setRegistrar(registrarsResponse.data);
+                    setTeacher(teachersResponse.data);
+                } else {
+                    // Handle unauthorized access
+                    console.error('Unauthorized access:', authResponse.data.message);
+                    // Handle redirection or any other action
+                }
+            } catch (error) {
+                console.error('Error checking authentication:', error);
+                // Handle error gracefully (e.g., display a user-friendly message)
+            }
         };
     
-        fetchData();
-      }, []);
+        checkAuthAndFetchData();
+    }, []);
+    
 
     // Create modal
     const handleCloseCreateModal = () => setShowCreateModal(false);
@@ -53,7 +70,7 @@ function AdminUserAccounts ({ handleClose }) {
     const handleCloseUpdateRegistrarModal = () => setshowUpdateRegistrarModal(false);
     const handleShowUpdateRegistrarModal = (registrar) => {
         setUpdateModalData(registrar);
-        setshowUpdateAdminModal(true);
+        setshowUpdateRegistrarModal(true);
     }
     // Teacher
     const handleCloseUpdateTeacherModal = () => setshowUpdateTeacherModal(false);
@@ -63,25 +80,21 @@ function AdminUserAccounts ({ handleClose }) {
     }
 
     // Function to handle user deletion
-  const handleDelete = async (userId) => {
-    try {
-      const response = await axios.delete(`http://localhost:5000/api/auth/users/${userId}`);
-      if (response.status === 200) {
-        console.log('User deleted successfully:', response.data.message);
-        // You can add additional logic here, such as showing a success message or updating the UI
-        alert('User deleted successfully!');
-        handleClose();
-      } else {
-        console.error('Error deleting user:', response.data.message);
-        // Handle error based on response status and message
-        // You can show an appropriate error message to the user
-      }
-    } catch (error) {
-      console.error('Delete Error:', error.message);
-      // Handle delete error
-      // You can show an appropriate error message to the user
-    }
-  };
+    const handleDelete = async (userId) => {
+        try {
+            const response = await axios.delete(`http://localhost:5000/api/auth/users/${userId}`);
+            if (response.status === 200) {
+                console.log('User deleted successfully:', response.data.message);
+                alert('User deleted successfully!');
+                handleClose();
+            } else {
+                console.error('Error deleting user:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Delete Error:', error.message);
+        }
+    };
+
 
   return (
     <Row>

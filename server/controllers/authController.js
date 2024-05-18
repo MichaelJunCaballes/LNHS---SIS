@@ -6,7 +6,6 @@
     return jwt.sign(
       { _id: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' } // Set an expiration time for the token
     );
   };
 
@@ -67,9 +66,11 @@
       }
       res.json(user);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error('Error fetching user by ID:', error); // Log the error for debugging
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   };
+  
 
   exports.getUsersByRole = async (req, res) => {
     try {
@@ -109,21 +110,21 @@
 
   exports.updateUserById = async (req, res) => {
     try {
-      // Filter out the password field from the req.body
       const { password, ...updateData } = req.body;
-  
-      // Update the user with the filtered updateData
-      const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+      if (password) {
+        updateData.password = await bcrypt.hash(password, 10);
       }
-  
-      res.json(user);
+      const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
+      if (!updatedUser) {
+        return res.status(404).send({ message: 'User not found' });
+      }
+      res.send(updatedUser);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error('Error updating user:', error);
+      res.status(500).send({ message: 'Server error' });
     }
   };
+  
   
 
   exports.deleteUserById = async (req, res) => {
@@ -146,8 +147,8 @@
     }
   
     try {
-      jwt.verify(token, process.env.JWT_SECRET);
-      res.status(200).json({ message: 'Authenticated' });
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      res.status(200).json({ userId: decoded._id, token, message: 'Authenticated' }); // Include token in the response
     } catch (error) {
       res.status(401).json({ message: 'Not authenticated' });
     }

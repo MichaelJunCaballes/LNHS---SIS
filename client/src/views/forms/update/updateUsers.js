@@ -1,60 +1,32 @@
 import React, { useState } from 'react';
-import { Form, FormGroup, Label, Input, Button } from "reactstrap";
+import { Form, FormGroup, Label, Input } from "reactstrap";
 import axios from 'axios';
 
 function UpdateUsers({ userData, handleClose }) {
-  
-  // Function to calculate age based on date of birth
-  const calculateAge = (dateOfBirth) => {
-    const dob = new Date(dateOfBirth);
-    const ageDiffMs = Date.now() - dob.getTime();
-    const ageDate = new Date(ageDiffMs); // miliseconds from epoch
-    return Math.abs(ageDate.getUTCFullYear() - 1970);
-  };
 
-  const [formData, setFormData] = useState({
-    username: userData.username,
-    firstname: userData.firstname,
-    lastname: userData.lastname,
-    middlename: userData.middlename,
-    age: userData.age,
-    address: userData.address,
-    sex: userData.sex,
-    email: userData.email,
-    mobile: userData.mobile,
-    dateOfBirth: userData.dateOfBirth,
-    role: userData.role,
-  });
+  const [formData, setFormData] = useState({userData});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'dateOfBirth') {
-      setFormData(prevState => ({
-        ...prevState,
-        age: calculateAge(value), // Update age based on new date of birth
-        [name]: value
-      }));
-    } else {
-      setFormData(prevState => ({
+    setFormData(prevState => ({
         ...prevState,
         [name]: value
-      }));
-    }
-  };
+    }));
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/auth/users/${userData._id}`, formData);
-      console.log('User updated successfully');
-      alert('User updated successfully')
-      handleClose(); // close the modal after successful update
-      // Optionally, you can add logic to handle success (e.g., show a success message)
+        await axios.put(`http://localhost:5000/api/auth/users/${userData._id}`, formData);
+        console.log('User updated successfully');
+        alert('User updated successfully');
+        handleClose(); // Close the modal after successful update
     } catch (error) {
-      console.error('Error updating user:', error);
-      // Optionally, you can add logic to handle errors (e.g., show an error message)
+        console.error('Error updating user:', error);
     }
-  };
+};
+
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -176,7 +148,6 @@ function UpdateUsers({ userData, handleClose }) {
           <option value="teacher">Teacher</option>
         </Input>
       </FormGroup>
-      <Button color="primary" type="submit">Update</Button>
     </Form>
   );
 }
